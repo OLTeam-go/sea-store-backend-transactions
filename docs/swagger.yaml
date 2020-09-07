@@ -1,0 +1,14 @@
+basePath: /api
+host: sea-store-backend-transaction.herokuapp.com
+info:
+  contact:
+    email: yoganandamahaputra@gmail.com
+    name: OLTeamgo API Support
+  description: Api Documentation for Service Transaction
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Service Transaction API
+  version: "1.0"
+paths: {}
+swagger: "2.0"
