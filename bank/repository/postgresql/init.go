@@ -1,7 +1,7 @@
 package postgresql
 
 import (
-	"github.com/OLTeam-go/sea-store-backend-transactions/repository/banks"
+	"github.com/OLTeam-go/sea-store-backend-transactions/domain"
 	"github.com/go-pg/pg"
 )
 
@@ -10,7 +10,7 @@ type bankPostgresqlRepository struct {
 }
 
 // New function instantiate object that represent bank repository
-func New(Conn *pg.DB) banks.Repository {
+func New(Conn *pg.DB) domain.BankRepository {
 	return &bankPostgresqlRepository{
 		Conn,
 	}
