@@ -1,0 +1,19 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Api Documentation for Service Transaction",
+        "title": "Service Transaction API",
+        "contact": {
+            "name": "OLTeamgo API Support",
+            "email": "yoganandamahaputra@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "sea-store-backend-transaction.herokuapp.com",
+    "basePath": "/api",
+    "paths": {}
+}

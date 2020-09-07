@@ -14,4 +14,7 @@ run:
 test: 
 	go test -v -cover -covermode=atomic ./...
 
+start:
+	docker-compose up --build
+
 .PHONY: clean install engine docker run stop test

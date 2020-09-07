@@ -1,0 +1,29 @@
+version: "3.8"
+services: 
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: komangyogananda/sea-store-backend-transactions:0.1
+    container_name: "sea-store-backend-transactions"
+    depends_on: 
+      - postgre
+    links: 
+      - postgre
+    ports:
+      - 9091:9091
+    expose:
+      - 9091
+    restart: always
+    volumes: 
+      - .env:/app/.env
+  postgre:
+    image: postgres:9.6.19
+    ports:
+      - 5432:5432
+    environment: 
+      - POSTGRES_USER=compfest
+      - POSTGRES_PASSWORD=compfest2020
+      - POSTGRES_DB=transactions
+    volumes: 
+      - ~/dev/postgre:/var/lib/postgresql/data
