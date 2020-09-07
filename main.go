@@ -4,7 +4,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"time"
 
+	bankRepo "github.com/OLTeam-go/sea-store-backend-transactions/bank/repository/postgresql"
+	bankUsecase "github.com/OLTeam-go/sea-store-backend-transactions/bank/usecase"
+	database "github.com/OLTeam-go/sea-store-backend-transactions/db"
 	dTransactions "github.com/OLTeam-go/sea-store-backend-transactions/delivery/http"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -53,22 +58,25 @@ func main() {
 	}
 	migrations(dbURL)
 
-	// db, err := database.GetInstance()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// 	panic(err)
-	// }
+	db, err := database.GetInstance()
+	if err != nil {
+		log.Fatal(err)
+		panic(err)
+	}
 
 	// pagesize, err := strconv.Atoi(os.Getenv("PAGESIZE"))
-	// timeout, err := strconv.Atoi(os.Getenv("TIMEOUT"))
-	// port := os.Getenv("PORT")
+	timeout, err := strconv.Atoi(os.Getenv("TIMEOUT"))
+	if err != nil {
+		log.Println(err.Error())
+	}
+	port := os.Getenv("PORT")
 
 	e := echo.New()
 	e.Use(middleware.CORS())
 	e.Use(middleware.Logger())
-
-	port := os.Getenv("PORT")
-	dTransactions.New(e)
+	bRepo := bankRepo.New(db)
+	bUsecase := bankUsecase.New(bRepo, time.Duration(timeout)*time.Second)
+	dTransactions.New(e, bUsecase)
 
 	log.Fatal(e.Start(fmt.Sprintf(":%s", port)))
 }
