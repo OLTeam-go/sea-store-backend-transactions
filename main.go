@@ -47,10 +47,7 @@ func migrations(url string) {
 }
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println(err)
-	}
+	_ = godotenv.Load()
 
 	dbURL, exists := os.LookupEnv("DATABASE_URL")
 	if !exists {
