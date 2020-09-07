@@ -13,10 +13,7 @@ var singleton *pg.DB
 var mt sync.Mutex
 
 func connectDatabase() (*pg.DB, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return nil, err
-	}
+	_ = godotenv.Load()
 
 	dbURL, exist := os.LookupEnv("DATABASE_URL")
 	if !exist {
