@@ -6,7 +6,7 @@ import (
 	"github.com/OLTeam-go/sea-store-backend-transactions/models"
 )
 
-func (bu *bankUsecase) Fetch(c context.Context) (*[]models.Bank, error) {
+func (bu *bankUsecase) Fetch(c context.Context) ([]*models.Bank, error) {
 	ctx, cancel := context.WithTimeout(c, bu.timeoutContext)
 	defer cancel()
 
