@@ -8,10 +8,10 @@ import (
 
 // BankRepository represent the banks repository contract
 type BankRepository interface {
-	Fetch(ctx context.Context) (*[]models.Bank, error)
+	Fetch(ctx context.Context) ([]*models.Bank, error)
 }
 
 // BankUsecase represent the bank usecase
 type BankUsecase interface {
-	Fetch(ctx context.Context) (*[]models.Bank, error)
+	Fetch(ctx context.Context) ([]*models.Bank, error)
 }

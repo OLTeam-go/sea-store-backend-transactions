@@ -5,14 +5,14 @@ import (
 	"os"
 	"sync"
 
-	"github.com/go-pg/pg"
+	"github.com/jinzhu/gorm"
 	"github.com/joho/godotenv"
 )
 
-var singleton *pg.DB
+var singleton *gorm.DB
 var mt sync.Mutex
 
-func connectDatabase() (*pg.DB, error) {
+func connectDatabase() (*gorm.DB, error) {
 	_ = godotenv.Load()
 
 	dbURL, exist := os.LookupEnv("DATABASE_URL")
@@ -21,9 +21,10 @@ func connectDatabase() (*pg.DB, error) {
 	}
 	fmt.Println(fmt.Sprintf("connceting to postgres = %s", dbURL))
 
-	opt, err := pg.ParseURL(dbURL)
-	db := pg.Connect(opt)
-	_, err = db.Exec("SELECT 1")
+	db, err := gorm.Open("postgres", dbURL)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "db connection failed: %s", err.Error())
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +32,7 @@ func connectDatabase() (*pg.DB, error) {
 }
 
 // GetInstance return the singleton of db connection
-func GetInstance() (*pg.DB, error) {
+func GetInstance() (*gorm.DB, error) {
 	if singleton == nil {
 		mt.Lock()
 		defer mt.Unlock()

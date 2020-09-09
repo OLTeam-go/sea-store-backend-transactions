@@ -9,6 +9,10 @@ import (
 
 	bankRepo "github.com/OLTeam-go/sea-store-backend-transactions/bank/repository/postgresql"
 	bankUsecase "github.com/OLTeam-go/sea-store-backend-transactions/bank/usecase"
+	cartRepo "github.com/OLTeam-go/sea-store-backend-transactions/cart/repository/postgresql"
+	cartUsecase "github.com/OLTeam-go/sea-store-backend-transactions/cart/usecase"
+	cartItemRepo "github.com/OLTeam-go/sea-store-backend-transactions/cart_item/repository/postgresql"
+	cartItemUsecase "github.com/OLTeam-go/sea-store-backend-transactions/cart_item/usecase"
 	database "github.com/OLTeam-go/sea-store-backend-transactions/db"
 	dTransactions "github.com/OLTeam-go/sea-store-backend-transactions/delivery/http"
 	"github.com/golang-migrate/migrate/v4"
@@ -56,12 +60,13 @@ func main() {
 	migrations(dbURL)
 
 	db, err := database.GetInstance()
+	defer db.Close()
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
 	}
 
-	// pagesize, err := strconv.Atoi(os.Getenv("PAGESIZE"))
+	pagesize, err := strconv.Atoi(os.Getenv("PAGESIZE"))
 	timeout, err := strconv.Atoi(os.Getenv("TIMEOUT"))
 	if err != nil {
 		log.Println(err.Error())
@@ -71,9 +76,19 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.CORS())
 	e.Use(middleware.Logger())
+
+	tc := time.Duration(timeout) * time.Second
+
 	bRepo := bankRepo.New(db)
-	bUsecase := bankUsecase.New(bRepo, time.Duration(timeout)*time.Second)
-	dTransactions.New(e, bUsecase)
+	bUsecase := bankUsecase.New(bRepo, tc)
+
+	cRepo := cartRepo.New(db, pagesize)
+	cUsecase := cartUsecase.New(cRepo, tc)
+
+	cItRepo := cartItemRepo.New(db, pagesize)
+	cItUsecase := cartItemUsecase.New(cItRepo, cRepo, tc)
+
+	dTransactions.New(e, bUsecase, cUsecase, cItUsecase)
 
 	log.Fatal(e.Start(fmt.Sprintf(":%s", port)))
 }

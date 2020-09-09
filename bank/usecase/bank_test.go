@@ -23,14 +23,14 @@ func Test_Bank(t *testing.T) {
 		Name:   "BNI",
 		Active: true,
 	}
-	var mockList []models.Bank
-	mockList = append(mockList, mockBank1)
-	mockRepo.On("Fetch", mock.Anything).Return(&mockList, nil)
+	var mockList []*models.Bank
+	mockList = append(mockList, &mockBank1)
+	mockRepo.On("Fetch", mock.Anything).Return(mockList, nil)
 	t.Run("success fetch bank", func(t *testing.T) {
 		bu := usecase.New(mockRepo, time.Second*3)
 		res, err := bu.Fetch(context.TODO())
 
 		assert.NoError(t, err)
-		assert.True(t, reflect.DeepEqual(mockBank1, (*res)[0]))
+		assert.True(t, reflect.DeepEqual(mockBank1, *(res[0])))
 	})
 }
