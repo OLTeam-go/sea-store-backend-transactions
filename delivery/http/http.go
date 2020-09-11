@@ -344,9 +344,99 @@ func (h *httpDelivery) FetchTransactions(c echo.Context) error {
 		})
 	}
 	filter := getFilterFromRequest(c)
-	log.Println(filter)
+
 	ctx := c.Request().Context()
 	res, err := h.transactionUsecase.FetchTransactions(ctx, page, filter)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, Response{
+			Status:  http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, PaginationResponse{
+		Status: http.StatusOK,
+		Data:   res,
+		Page:   page,
+		Size:   len(res),
+	})
+}
+
+// FetchTransactionsByCustomerID process request to fetch transactions history for a customer
+// @Summary Endpoint to fetch transactions
+// @Accept json
+// @Produce json
+// @Failure 400 {object} Response
+// @Failure 500 {object} Response
+// @Router /transactions/history/{customer_id} [get]
+// @Success 200 {object} Response{data=[]models.Transaction}
+// @Param customer_id path string true "customer uuid"
+// @Param page query int false "page index default 1 (1 based index)"
+// @Param filter query int false "Filter available = [all, rejected, pending, accepted] default all"
+func (h *httpDelivery) FetchTransactionsByCustomerID(c echo.Context) error {
+	customerID, err := uuid.Parse(c.Param("customer_id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, Response{
+			Status:  http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+	page, err := getPageFromRequest(c)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, Response{
+			Status:  http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+	filter := getFilterFromRequest(c)
+
+	ctx := c.Request().Context()
+	res, err := h.transactionUsecase.FetchTransactionsByCustomerID(ctx, page, customerID, filter)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, Response{
+			Status:  http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, PaginationResponse{
+		Status: http.StatusOK,
+		Data:   res,
+		Page:   page,
+		Size:   len(res),
+	})
+}
+
+// FetchRequestedItemsByMerchantID process request to fetch paid snapshot items for a merchant
+// @Summary Endpoint to fetch paid snapshot items for a merchant
+// @Accept json
+// @Produce json
+// @Failure 400 {object} Response
+// @Failure 500 {object} Response
+// @Router /transactions/merchant/{merchant_id} [get]
+// @Success 200 {object} Response{data=[]models.SnapshotCartItem}
+// @Param merchant_id path string false "page index default 1 (1 based index)"
+// @Param page query int false "page index default 1 (1 based index)"
+func (h *httpDelivery) FetchRequestedItemsByMerchantID(c echo.Context) error {
+	merchantID, err := uuid.Parse(c.Param("merchant_id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, Response{
+			Status:  http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+	page, err := getPageFromRequest(c)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, Response{
+			Status:  http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	ctx := c.Request().Context()
+	res, err := h.snapshotUsecase.FetchSnapshotCartItemsByMerchantID(ctx, page, merchantID)
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, Response{

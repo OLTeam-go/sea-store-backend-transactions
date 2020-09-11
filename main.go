@@ -17,6 +17,8 @@ import (
 	dTransactions "github.com/OLTeam-go/sea-store-backend-transactions/delivery/http"
 	"github.com/OLTeam-go/sea-store-backend-transactions/domain"
 	itemRepo "github.com/OLTeam-go/sea-store-backend-transactions/item/repository/api"
+	snapshotCartItemRepo "github.com/OLTeam-go/sea-store-backend-transactions/snapshot_cart_item/repository/postgresql"
+	snapshotCartItemUsecase "github.com/OLTeam-go/sea-store-backend-transactions/snapshot_cart_item/usecase"
 	transactionRepo "github.com/OLTeam-go/sea-store-backend-transactions/transaction/repository/postgresql"
 	transactionUsecase "github.com/OLTeam-go/sea-store-backend-transactions/transaction/usecase"
 	echoPrometheus "github.com/globocom/echo-prometheus"
@@ -91,23 +93,27 @@ func main() {
 	cItRepo := cartItemRepo.New(db, pagesize)
 	tRepo := transactionRepo.New(db, pagesize)
 	iRepo := itemRepo.New(apiurl)
+	sRepo := snapshotCartItemRepo.New(db, pagesize)
 	allRepo := domain.AvailableRepository{
 		BankRepo:        bRepo,
 		CartRepo:        cRepo,
 		CartItemRepo:    cItRepo,
 		TransactionRepo: tRepo,
 		ItemRepo:        iRepo,
+		SnapshotRepo:    sRepo,
 	}
 
 	bUsecase := bankUsecase.New(allRepo, tc)
 	cUsecase := cartUsecase.New(allRepo, tc)
 	cItUsecase := cartItemUsecase.New(allRepo, tc)
 	tUsecase := transactionUsecase.New(allRepo, tc)
+	sUsecase := snapshotCartItemUsecase.New(allRepo, tc)
 	allUsecase := domain.AvailableUsecase{
-		BankUsecase:        bUsecase,
-		CartUsecase:        cUsecase,
-		CartItemUsecase:    cItUsecase,
-		TransactionUsecase: tUsecase,
+		BankUsecase:             bUsecase,
+		CartUsecase:             cUsecase,
+		CartItemUsecase:         cItUsecase,
+		TransactionUsecase:      tUsecase,
+		SnapshotCartItemUsecase: sUsecase,
 	}
 
 	dTransactions.New(e, allUsecase)

@@ -14,11 +14,14 @@ type httpDelivery struct {
 	cartUsecase        domain.CartUsecase
 	cartItemUsecase    domain.CartItemUsecase
 	transactionUsecase domain.TransactionUsecase
+	snapshotUsecase    domain.SnapshotCartItemUsecase
 }
 
 func transactionGroup(e *echo.Echo, h *httpDelivery) {
 	tGroup := e.Group("/api/transaction")
 	e.GET("/api/transactions", h.FetchTransactions)
+	e.GET("/api/transactions/history/:customer_id", h.FetchTransactionsByCustomerID)
+	e.GET("/api/transactions/merchant/:merchant_id", h.FetchRequestedItemsByMerchantID)
 	tGroup.POST("/accept/:transaction_id", h.AcceptTransaction)
 	tGroup.POST("/reject/:transaction_id", h.RejectTransaction)
 	tGroup.POST("/checkout/:customer_id", h.CheckoutCart)
@@ -48,6 +51,7 @@ func New(e *echo.Echo, u domain.AvailableUsecase) dTransactions.Delivery {
 		cartUsecase:        u.CartUsecase,
 		cartItemUsecase:    u.CartItemUsecase,
 		transactionUsecase: u.TransactionUsecase,
+		snapshotUsecase:    u.SnapshotCartItemUsecase,
 	}
 	e.GET("/", handler.Hello)
 	apiGroup(e, handler)

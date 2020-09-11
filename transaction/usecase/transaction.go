@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"errors"
-	"log"
 
 	"github.com/OLTeam-go/sea-store-backend-transactions/enum"
 
@@ -151,13 +150,30 @@ func (u *transactionUsecase) FetchTransactions(c context.Context, page int, filt
 	ctx, cancel := context.WithTimeout(c, u.timeoutContext)
 	defer cancel()
 	status := getTransactionStatusFromFilter(filter)
-	log.Println(status)
 
 	if page <= 0 {
 		return nil, errors.New("page is invalid")
 	}
 
 	res, err := u.transactionRepo.FetchTransactions(ctx, page, status)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (u *transactionUsecase) FetchTransactionsByCustomerID(c context.Context, page int, customerID uuid.UUID, filter enum.TransactionFilterStatus) ([]*models.Transaction, error) {
+	ctx, cancel := context.WithTimeout(c, u.timeoutContext)
+	defer cancel()
+	status := getTransactionStatusFromFilter(filter)
+
+	if page <= 0 {
+		return nil, errors.New("page is invalid")
+	}
+
+	res, err := u.transactionRepo.FetchTransactionsByCustomerID(ctx, page, customerID, status)
 
 	if err != nil {
 		return nil, err
