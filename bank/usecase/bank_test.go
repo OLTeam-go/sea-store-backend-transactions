@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/OLTeam-go/sea-store-backend-transactions/bank/usecase"
+	"github.com/OLTeam-go/sea-store-backend-transactions/domain"
 
 	"github.com/OLTeam-go/sea-store-backend-transactions/models"
 
@@ -26,8 +27,11 @@ func Test_Bank(t *testing.T) {
 	var mockList []*models.Bank
 	mockList = append(mockList, &mockBank1)
 	mockRepo.On("Fetch", mock.Anything).Return(mockList, nil)
+	r := domain.AvailableRepository{
+		BankRepo: mockRepo,
+	}
 	t.Run("success fetch bank", func(t *testing.T) {
-		bu := usecase.New(mockRepo, time.Second*3)
+		bu := usecase.New(r, time.Second*3)
 		res, err := bu.Fetch(context.TODO())
 
 		assert.NoError(t, err)

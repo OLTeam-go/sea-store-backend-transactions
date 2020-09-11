@@ -13,9 +13,9 @@ type CartUsecase struct {
 }
 
 //New function initialize usecase used for cart
-func New(cr domain.CartRepository, tc time.Duration) domain.CartUsecase {
+func New(r domain.AvailableRepository, tc time.Duration) domain.CartUsecase {
 	return &CartUsecase{
-		repo:           cr,
+		repo:           r.CartRepo,
 		timeoutContext: tc,
 	}
 }

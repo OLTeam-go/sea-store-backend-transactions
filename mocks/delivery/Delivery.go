@@ -12,8 +12,36 @@ type Delivery struct {
 	mock.Mock
 }
 
+// AcceptTransaction provides a mock function with given fields: c
+func (_m *Delivery) AcceptTransaction(c echo.Context) error {
+	ret := _m.Called(c)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(echo.Context) error); ok {
+		r0 = rf(c)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // AddItemToCart provides a mock function with given fields: c
 func (_m *Delivery) AddItemToCart(c echo.Context) error {
+	ret := _m.Called(c)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(echo.Context) error); ok {
+		r0 = rf(c)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// CheckoutCart provides a mock function with given fields: c
+func (_m *Delivery) CheckoutCart(c echo.Context) error {
 	ret := _m.Called(c)
 
 	var r0 error
@@ -54,6 +82,20 @@ func (_m *Delivery) FetchCartHistoryByCustomerID(c echo.Context) error {
 	return r0
 }
 
+// FetchTransactions provides a mock function with given fields: c
+func (_m *Delivery) FetchTransactions(c echo.Context) error {
+	ret := _m.Called(c)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(echo.Context) error); ok {
+		r0 = rf(c)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // GetActiveCartByCustomerID provides a mock function with given fields: c
 func (_m *Delivery) GetActiveCartByCustomerID(c echo.Context) error {
 	ret := _m.Called(c)
@@ -70,6 +112,20 @@ func (_m *Delivery) GetActiveCartByCustomerID(c echo.Context) error {
 
 // Hello provides a mock function with given fields: c
 func (_m *Delivery) Hello(c echo.Context) error {
+	ret := _m.Called(c)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(echo.Context) error); ok {
+		r0 = rf(c)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// RejectTransaction provides a mock function with given fields: c
+func (_m *Delivery) RejectTransaction(c echo.Context) error {
 	ret := _m.Called(c)
 
 	var r0 error

@@ -12,9 +12,9 @@ type bankUsecase struct {
 }
 
 //New function initializze usecase for services
-func New(br domain.BankRepository, tc time.Duration) domain.BankUsecase {
+func New(r domain.AvailableRepository, tc time.Duration) domain.BankUsecase {
 	return &bankUsecase{
-		repo:           br,
+		repo:           r.BankRepo,
 		timeoutContext: tc,
 	}
 }

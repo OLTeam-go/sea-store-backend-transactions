@@ -13,10 +13,10 @@ type cartItemUsecase struct {
 }
 
 //New function initialize cart_item's usecase
-func New(cir domain.CartItemRepository, cr domain.CartRepository, timeoutContext time.Duration) domain.CartItemUsecase {
+func New(r domain.AvailableRepository, timeoutContext time.Duration) domain.CartItemUsecase {
 	return &cartItemUsecase{
-		cartItemRepo:   cir,
-		cartRepo:       cr,
+		cartItemRepo:   r.CartItemRepo,
+		cartRepo:       r.CartRepo,
 		timeoutContext: timeoutContext,
 	}
 }
