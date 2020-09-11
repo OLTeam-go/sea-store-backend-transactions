@@ -12,8 +12,9 @@ type AvailableRepository struct {
 
 //AvailableUsecase are container of all available usecase
 type AvailableUsecase struct {
-	BankUsecase        BankUsecase
-	CartUsecase        CartUsecase
-	TransactionUsecase TransactionUsecase
-	CartItemUsecase    CartItemUsecase
+	BankUsecase             BankUsecase
+	CartUsecase             CartUsecase
+	TransactionUsecase      TransactionUsecase
+	CartItemUsecase         CartItemUsecase
+	SnapshotCartItemUsecase SnapshotCartItemUsecase
 }

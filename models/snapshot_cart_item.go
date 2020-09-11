@@ -15,4 +15,5 @@ type SnapshotCartItem struct {
 	Category      string    `json:"category"`
 	Price         float64   `json:"price"`
 	Quantity      int       `json:"quantity"`
+	Paid          bool      `json:"paid"`
 }

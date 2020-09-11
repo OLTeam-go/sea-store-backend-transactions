@@ -14,4 +14,6 @@ type Delivery interface {
 	AcceptTransaction(c echo.Context) error
 	RejectTransaction(c echo.Context) error
 	FetchTransactions(c echo.Context) error
+	FetchTransactionsByCustomerID(c echo.Context) error
+	FetchRequestedItemsByMerchantID(c echo.Context) error
 }

@@ -52,7 +52,6 @@ func (r *transactionRepository) FetchTransactions(c context.Context, page int, s
 	var transactions []*models.Transaction
 	offset := (page - 1) * r.pagesize
 	limit := r.pagesize
-	r.Conn.LogMode(true)
 	var st []int
 	for _, s := range status {
 		st = append(st, int(s))
@@ -64,6 +63,31 @@ func (r *transactionRepository) FetchTransactions(c context.Context, page int, s
 		Preload("Cart").
 		Offset(offset).
 		Limit(limit).
+		Where("status IN (?)", st).
+		Find(&transactions)
+
+	if DB.Error != nil {
+		return nil, DB.Error
+	}
+	return transactions, nil
+}
+
+func (r *transactionRepository) FetchTransactionsByCustomerID(c context.Context, page int, customerID uuid.UUID, status []enum.TransactionStatus) ([]*models.Transaction, error) {
+	var transactions []*models.Transaction
+	offset := (page - 1) * r.pagesize
+	limit := r.pagesize
+	var st []int
+	for _, s := range status {
+		st = append(st, int(s))
+	}
+	r.Conn.LogMode(true)
+	DB := r.Conn.
+		Preload("Bank").
+		Preload("SnapshotCartItems").
+		Preload("Cart").
+		Offset(offset).
+		Limit(limit).
+		Where("customer_id = ?", customerID).
 		Where("status IN (?)", st).
 		Find(&transactions)
 
