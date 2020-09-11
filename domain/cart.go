@@ -11,6 +11,8 @@ import (
 type CartRepository interface {
 	GetActiveByCustomerID(ctx context.Context, id uuid.UUID) (*models.Cart, error)
 	FetchHistoryByCustomerID(ctx context.Context, id uuid.UUID, page int) ([]*models.Cart, error)
+	Update(ctx context.Context, cart models.Cart) error
+	GetByID(ctx context.Context, id uuid.UUID) (*models.Cart, error)
 }
 
 // CartUsecase represent the cart's usecase

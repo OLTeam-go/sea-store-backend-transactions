@@ -10,4 +10,8 @@ type Delivery interface {
 	FetchCartHistoryByCustomerID(c echo.Context) error
 	AddItemToCart(c echo.Context) error
 	RemoveItemFromCart(c echo.Context) error
+	CheckoutCart(c echo.Context) error
+	AcceptTransaction(c echo.Context) error
+	RejectTransaction(c echo.Context) error
+	FetchTransactions(c echo.Context) error
 }

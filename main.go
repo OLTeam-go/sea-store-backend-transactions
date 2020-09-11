@@ -15,6 +15,11 @@ import (
 	cartItemUsecase "github.com/OLTeam-go/sea-store-backend-transactions/cart_item/usecase"
 	database "github.com/OLTeam-go/sea-store-backend-transactions/db"
 	dTransactions "github.com/OLTeam-go/sea-store-backend-transactions/delivery/http"
+	"github.com/OLTeam-go/sea-store-backend-transactions/domain"
+	itemRepo "github.com/OLTeam-go/sea-store-backend-transactions/item/repository/api"
+	transactionRepo "github.com/OLTeam-go/sea-store-backend-transactions/transaction/repository/postgresql"
+	transactionUsecase "github.com/OLTeam-go/sea-store-backend-transactions/transaction/usecase"
+	echoPrometheus "github.com/globocom/echo-prometheus"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -68,6 +73,7 @@ func main() {
 
 	pagesize, err := strconv.Atoi(os.Getenv("PAGESIZE"))
 	timeout, err := strconv.Atoi(os.Getenv("TIMEOUT"))
+	apiurl := os.Getenv("MICROSERVICE_ITEMS_URL")
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -76,19 +82,35 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.CORS())
 	e.Use(middleware.Logger())
+	e.Use(echoPrometheus.MetricsMiddleware())
 
 	tc := time.Duration(timeout) * time.Second
 
 	bRepo := bankRepo.New(db)
-	bUsecase := bankUsecase.New(bRepo, tc)
-
 	cRepo := cartRepo.New(db, pagesize)
-	cUsecase := cartUsecase.New(cRepo, tc)
-
 	cItRepo := cartItemRepo.New(db, pagesize)
-	cItUsecase := cartItemUsecase.New(cItRepo, cRepo, tc)
+	tRepo := transactionRepo.New(db, pagesize)
+	iRepo := itemRepo.New(apiurl)
+	allRepo := domain.AvailableRepository{
+		BankRepo:        bRepo,
+		CartRepo:        cRepo,
+		CartItemRepo:    cItRepo,
+		TransactionRepo: tRepo,
+		ItemRepo:        iRepo,
+	}
 
-	dTransactions.New(e, bUsecase, cUsecase, cItUsecase)
+	bUsecase := bankUsecase.New(allRepo, tc)
+	cUsecase := cartUsecase.New(allRepo, tc)
+	cItUsecase := cartItemUsecase.New(allRepo, tc)
+	tUsecase := transactionUsecase.New(allRepo, tc)
+	allUsecase := domain.AvailableUsecase{
+		BankUsecase:        bUsecase,
+		CartUsecase:        cUsecase,
+		CartItemUsecase:    cItUsecase,
+		TransactionUsecase: tUsecase,
+	}
+
+	dTransactions.New(e, allUsecase)
 
 	log.Fatal(e.Start(fmt.Sprintf(":%s", port)))
 }

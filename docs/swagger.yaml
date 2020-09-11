@@ -1,4 +1,127 @@
 basePath: /api
+definitions:
+  http.CartItemRequest:
+    properties:
+      item_id:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  http.CheckoutRequest:
+    properties:
+      bank_account_number:
+        type: string
+      bank_id:
+        type: string
+    type: object
+  http.Response:
+    properties:
+      data:
+        type: object
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  models.Bank:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  models.Cart:
+    properties:
+      active:
+        type: boolean
+      cart_items:
+        items:
+          $ref: '#/definitions/models.CartItem'
+        type: array
+      created_at:
+        type: string
+      customer_id:
+        type: string
+      id:
+        type: string
+      snapshot_cart_items:
+        items:
+          $ref: '#/definitions/models.SnapshotCartItem'
+        type: array
+      update_at:
+        type: string
+    type: object
+  models.CartItem:
+    properties:
+      cart_id:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      item_id:
+        type: string
+      quantity:
+        type: integer
+      update_at:
+        type: string
+    type: object
+  models.SnapshotCartItem:
+    properties:
+      cart_id:
+        type: string
+      category:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      item_id:
+        type: string
+      merchant_id:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      quantity:
+        type: integer
+      transaction_id:
+        type: string
+      update_at:
+        type: string
+    type: object
+  models.Transaction:
+    properties:
+      bank:
+        $ref: '#/definitions/models.Bank'
+      bank_account_number:
+        type: string
+      bank_id:
+        type: string
+      cart:
+        $ref: '#/definitions/models.Cart'
+      cart_id:
+        type: string
+      cost:
+        type: number
+      created_at:
+        type: string
+      customer_id:
+        type: string
+      id:
+        type: string
+      snapshot_cart_items:
+        items:
+          $ref: '#/definitions/models.SnapshotCartItem'
+        type: array
+      status:
+        type: integer
+      update_at:
+        type: string
+    type: object
 host: sea-store-backend-transaction.herokuapp.com
 info:
   contact:
@@ -10,5 +133,271 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Service Transaction API
   version: "1.0"
-paths: {}
+paths:
+  /banks:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Bank'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.Response'
+      summary: Endpoint to fetch all available banks
+  /cart/customer/:id:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Customer ID
+        in: path
+        name: customer_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Cart'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.Response'
+      summary: Endpoint to get active cart of an user
+  /cart/customer/add/{customer_id}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Customer ID
+        in: path
+        name: customer_id
+        required: true
+        type: string
+      - description: Cart Item REquest
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/http.CartItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.Response'
+      summary: Endpoint to add an item to customer cart
+  /cart/customer/history/{customer_id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Customer ID
+        in: path
+        name: customer_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Cart'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.Response'
+      summary: Endpoint to fetch cart history for a customer
+  /cart/customer/remove/{customer_id}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Customer ID
+        in: path
+        name: customer_id
+        required: true
+        type: string
+      - description: Cart Item Request
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/http.CartItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.Response'
+      summary: Endpoint to add an item to customer cart
+  /transaction/accept/{transaction_id}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: transaction_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.Response'
+      summary: Endpoint to accept a transaction by admin
+  /transaction/checkout/{customer_id}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Customer ID
+        in: path
+        name: customer_id
+        required: true
+        type: string
+      - description: Checkout Request
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/http.CheckoutRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.Response'
+      summary: Endpoint to checkout a cart
+  /transaction/reject/{transaction_id}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: transaction_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.Response'
+      summary: Endpoint to reject a transaction by admin
+  /transactions:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Transaction'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.Response'
+      summary: Endpoint to fetch transactions
 swagger: "2.0"

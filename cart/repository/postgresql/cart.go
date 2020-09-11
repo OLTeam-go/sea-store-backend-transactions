@@ -2,6 +2,7 @@ package postgresql
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -39,11 +40,38 @@ func (cr *cartRepository) FetchHistoryByCustomerID(ctx context.Context, id uuid.
 
 	var cart []*models.Cart
 
-	DB := cr.Conn.Preload("CartItems").Find(&cart, "customer_id = ? and active = false", id).Offset(offset).Limit(limit)
+	DB := cr.Conn.Preload("SnapshotCartItems").Find(&cart, "customer_id = ? and active = false", id).Offset(offset).Limit(limit)
 
 	if DB.Error != nil {
 		return nil, DB.Error
 	}
 
 	return cart, nil
+}
+
+func (cr *cartRepository) Update(ctx context.Context, c models.Cart) error {
+	c.UpdatedAt = time.Now()
+	var cart models.Cart
+	DB := cr.Conn.Omit("SnapshotCartItems").Omit("CartItems").Model(&cart).Updates(map[string]interface{}{
+		"Active":     c.Active,
+		"UpdatedAt":  c.UpdatedAt,
+		"CustomerID": c.CustomerID,
+	})
+	if DB.Error != nil {
+		return DB.Error
+	}
+	return nil
+}
+
+func (cr *cartRepository) GetByID(ctx context.Context, id uuid.UUID) (*models.Cart, error) {
+	var cart models.Cart
+	DB := cr.Conn.
+		Preload("CartItems").
+		Preload("SnapshotCartItems").
+		First(&cart, "id = ?", id)
+	if DB.Error != nil {
+		return nil, DB.Error
+	}
+
+	return &cart, nil
 }
