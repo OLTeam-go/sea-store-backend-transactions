@@ -2,6 +2,7 @@ package postgresql
 
 import (
 	"context"
+	"time"
 
 	"github.com/OLTeam-go/sea-store-backend-transactions/models"
 	"github.com/google/uuid"
@@ -32,4 +33,14 @@ func (r *snapshotCartItemRepository) FetchPaidItemsByMerchantID(c context.Contex
 	}
 
 	return snapshotCartItems, nil
+}
+
+func (r *snapshotCartItemRepository) SetPaid(c context.Context, s models.SnapshotCartItem) error {
+	s.UpdatedAt = time.Now()
+	s.Paid = true
+	DB := r.Conn.Save(&s)
+	if DB.Error != nil {
+		return DB.Error
+	}
+	return nil
 }

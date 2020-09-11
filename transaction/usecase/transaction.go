@@ -95,6 +95,11 @@ func (u *transactionUsecase) AcceptStatusTransaction(c context.Context, id uuid.
 	if transaction.Status != enum.TransactionPending {
 		return errors.New("Transaction is not a pending transaction")
 	}
+
+	for _, snapshotItems := range transaction.SnapshotCartItems {
+		_ = u.snapshotRepo.SetPaid(ctx, snapshotItems)
+	}
+
 	// TODO Implement update merchant wallet
 
 	err = u.transactionRepo.UpdateStatusTransaction(ctx, id, enum.TransactionAccepted)
