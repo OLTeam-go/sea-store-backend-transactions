@@ -10,6 +10,7 @@ import (
 //SnapshotCartItemRepository represent snapshot_cart_item's repository
 type SnapshotCartItemRepository interface {
 	Create(c context.Context, s models.SnapshotCartItem) (*models.SnapshotCartItem, error)
+	SetPaid(c context.Context, s models.SnapshotCartItem) error
 	FetchPaidItemsByMerchantID(c context.Context, page int, merchantID uuid.UUID) ([]*models.SnapshotCartItem, error)
 }
 
