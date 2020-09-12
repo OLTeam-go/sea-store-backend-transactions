@@ -92,9 +92,9 @@ func (u *transactionUsecase) AcceptStatusTransaction(c context.Context, id uuid.
 	if err != nil {
 		return err
 	}
-	// if transaction.Status != enum.TransactionPending {
-	// 	return errors.New("Transaction is not a pending transaction")
-	// }
+	if transaction.Status != enum.TransactionPending {
+		return errors.New("Transaction is not a pending transaction")
+	}
 
 	for _, snapshotItems := range transaction.SnapshotCartItems {
 		_ = u.walletRepo.UpdateMerchantWallet(ctx, snapshotItems.MerchantID, snapshotItems.Price)
@@ -114,9 +114,9 @@ func (u *transactionUsecase) RejectStatusTransaction(c context.Context, id uuid.
 	if err != nil {
 		return err
 	}
-	// if transaction.Status != enum.TransactionPending {
-	// 	return errors.New("Transaction is not a pending transaction")
-	// }
+	if transaction.Status != enum.TransactionPending {
+		return errors.New("Transaction is not a pending transaction")
+	}
 	cartID := transaction.CartID
 	cart, err := u.cartRepo.GetByID(ctx, cartID)
 	if err != nil {
@@ -155,7 +155,7 @@ func (u *transactionUsecase) FetchTransactions(c context.Context, page int, filt
 	defer cancel()
 	status := getTransactionStatusFromFilter(filter)
 
-	if page <= 0 {
+	if page < 0 {
 		return nil, errors.New("page is invalid")
 	}
 
@@ -173,7 +173,7 @@ func (u *transactionUsecase) FetchTransactionsByCustomerID(c context.Context, pa
 	defer cancel()
 	status := getTransactionStatusFromFilter(filter)
 
-	if page <= 0 {
+	if page < 0 {
 		return nil, errors.New("page is invalid")
 	}
 

@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
@@ -16,10 +17,10 @@ func getPageFromRequest(c echo.Context) (int, error) {
 	qparam := c.QueryParam("page")
 	page, err := strconv.Atoi(qparam)
 	if err != nil {
-		page = 1
+		page = 0
 	}
-	if page <= 0 {
-		page = 1
+	if page < 0 {
+		return 0, errors.New("page is invalid")
 	}
 	return page, nil
 }
@@ -112,7 +113,7 @@ func (h *httpDelivery) GetActiveCartByCustomerID(c echo.Context) error {
 // @Router /cart/customer/history/{customer_id} [get]
 // @Success 200 {object} Response{data=[]models.Cart}
 // @Param customer_id path string true "Customer ID"
-// @Param page query int false "page index default 1 (1 based index)"
+// @Param page query int false "page index default 1 (1 based index), omit means fetch all"
 func (h *httpDelivery) FetchCartHistoryByCustomerID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -333,7 +334,7 @@ func (h *httpDelivery) RejectTransaction(c echo.Context) error {
 // @Failure 500 {object} Response
 // @Router /transactions [get]
 // @Success 200 {object} Response{data=[]models.Transaction}
-// @Param page query int false "page index default 1 (1 based index)"
+// @Param page query int false "page index default 1 (1 based index), omit means fetch all"
 // @Param filter query int false "Filter available = [all, rejected, pending, accepted] default all"
 func (h *httpDelivery) FetchTransactions(c echo.Context) error {
 	page, err := getPageFromRequest(c)
@@ -372,7 +373,7 @@ func (h *httpDelivery) FetchTransactions(c echo.Context) error {
 // @Router /transactions/history/{customer_id} [get]
 // @Success 200 {object} Response{data=[]models.Transaction}
 // @Param customer_id path string true "customer uuid"
-// @Param page query int false "page index default 1 (1 based index)"
+// @Param page query int false "page index default 1 (1 based index), omit means fetch all"
 // @Param filter query int false "Filter available = [all, rejected, pending, accepted] default all"
 func (h *httpDelivery) FetchTransactionsByCustomerID(c echo.Context) error {
 	customerID, err := uuid.Parse(c.Param("customer_id"))
@@ -417,8 +418,8 @@ func (h *httpDelivery) FetchTransactionsByCustomerID(c echo.Context) error {
 // @Failure 500 {object} Response
 // @Router /transactions/merchant/{merchant_id} [get]
 // @Success 200 {object} Response{data=[]models.SnapshotCartItem}
-// @Param merchant_id path string false "page index default 1 (1 based index)"
-// @Param page query int false "page index default 1 (1 based index)"
+// @Param merchant_id path string false "Merchant ID"
+// @Param page query int false "page index default 1 (1 based index), omit means fetch all"
 func (h *httpDelivery) FetchRequestedItemsByMerchantID(c echo.Context) error {
 	merchantID, err := uuid.Parse(c.Param("merchant_id"))
 	if err != nil {
