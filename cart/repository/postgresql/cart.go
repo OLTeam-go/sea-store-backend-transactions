@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jinzhu/gorm"
 
 	"github.com/OLTeam-go/sea-store-backend-transactions/models"
 )
@@ -40,7 +41,18 @@ func (cr *cartRepository) FetchHistoryByCustomerID(ctx context.Context, id uuid.
 
 	var cart []*models.Cart
 
-	DB := cr.Conn.Preload("SnapshotCartItems").Find(&cart, "customer_id = ? and active = false", id).Offset(offset).Limit(limit)
+	var DB *gorm.DB
+	if page != 0 {
+		DB = cr.Conn.
+			Preload("SnapshotCartItems").
+			Offset(offset).
+			Limit(limit).
+			Find(&cart, "customer_id = ? and active = false", id)
+	} else {
+		DB = cr.Conn.
+			Preload("SnapshotCartItems").
+			Find(&cart, "customer_id = ? and active = false", id)
+	}
 
 	if DB.Error != nil {
 		return nil, DB.Error

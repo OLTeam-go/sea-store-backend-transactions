@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/OLTeam-go/sea-store-backend-transactions/enum"
+	"github.com/jinzhu/gorm"
 
 	"github.com/OLTeam-go/sea-store-backend-transactions/models"
 	"github.com/google/uuid"
@@ -57,14 +58,24 @@ func (r *transactionRepository) FetchTransactions(c context.Context, page int, s
 		st = append(st, int(s))
 	}
 
-	DB := r.Conn.
-		Preload("Bank").
-		Preload("SnapshotCartItems").
-		Preload("Cart").
-		Offset(offset).
-		Limit(limit).
-		Where("status IN (?)", st).
-		Find(&transactions)
+	var DB *gorm.DB
+	if page != 0 {
+		DB = r.Conn.
+			Preload("Bank").
+			Preload("SnapshotCartItems").
+			Preload("Cart").
+			Offset(offset).
+			Limit(limit).
+			Where("status IN (?)", st).
+			Find(&transactions)
+	} else {
+		DB = r.Conn.
+			Preload("Bank").
+			Preload("SnapshotCartItems").
+			Preload("Cart").
+			Where("status IN (?)", st).
+			Find(&transactions)
+	}
 
 	if DB.Error != nil {
 		return nil, DB.Error
@@ -80,16 +91,26 @@ func (r *transactionRepository) FetchTransactionsByCustomerID(c context.Context,
 	for _, s := range status {
 		st = append(st, int(s))
 	}
-	r.Conn.LogMode(true)
-	DB := r.Conn.
-		Preload("Bank").
-		Preload("SnapshotCartItems").
-		Preload("Cart").
-		Offset(offset).
-		Limit(limit).
-		Where("customer_id = ?", customerID).
-		Where("status IN (?)", st).
-		Find(&transactions)
+	var DB *gorm.DB
+	if page != 0 {
+		DB = r.Conn.
+			Preload("Bank").
+			Preload("SnapshotCartItems").
+			Preload("Cart").
+			Offset(offset).
+			Limit(limit).
+			Where("customer_id = ?", customerID).
+			Where("status IN (?)", st).
+			Find(&transactions)
+	} else {
+		DB = r.Conn.
+			Preload("Bank").
+			Preload("SnapshotCartItems").
+			Preload("Cart").
+			Where("customer_id = ?", customerID).
+			Where("status IN (?)", st).
+			Find(&transactions)
+	}
 
 	if DB.Error != nil {
 		return nil, DB.Error

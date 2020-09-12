@@ -9,7 +9,7 @@ import (
 )
 
 func (u *snapshotCartItemUsecase) FetchSnapshotCartItemsByMerchantID(c context.Context, page int, merchantID uuid.UUID) ([]*models.SnapshotCartItem, error) {
-	if page <= 0 {
+	if page < 0 {
 		return nil, errors.New("page is invalid")
 	}
 	ctx, cancel := context.WithTimeout(c, u.timeoutContext)

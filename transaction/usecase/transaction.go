@@ -155,7 +155,7 @@ func (u *transactionUsecase) FetchTransactions(c context.Context, page int, filt
 	defer cancel()
 	status := getTransactionStatusFromFilter(filter)
 
-	if page <= 0 {
+	if page < 0 {
 		return nil, errors.New("page is invalid")
 	}
 
@@ -173,7 +173,7 @@ func (u *transactionUsecase) FetchTransactionsByCustomerID(c context.Context, pa
 	defer cancel()
 	status := getTransactionStatusFromFilter(filter)
 
-	if page <= 0 {
+	if page < 0 {
 		return nil, errors.New("page is invalid")
 	}
 
