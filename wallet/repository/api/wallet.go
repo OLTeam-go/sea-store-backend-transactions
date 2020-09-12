@@ -12,25 +12,28 @@ import (
 	"github.com/google/uuid"
 )
 
-func (r *walletRepository) UpdateMerchantWallet(c context.Context, merchantID uuid.UUID, amout float64) error {
-	payload := map[string]interface{}{"amount": amout}
+func (r *walletRepository) UpdateMerchantWallet(c context.Context, merchantID uuid.UUID, amount float64) error {
+	payload := map[string]interface{}{"amount": amount}
+	log.Println(payload)
 	reqBody, err := json.Marshal(payload)
 	var URL string
 	URL = fmt.Sprintf("%s/api/v1/transactions/users/%s/credit", r.APIURL, merchantID)
 
-	client := &http.Client{}
 	req, err := http.NewRequest("PUT", URL, bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json")
+	body, err := ioutil.ReadAll(req.Body)
+	log.Println(string(body))
 	if err != nil {
 		return err
 	}
-	res, err := client.Do(req)
-	log.Println(URL, res.Status, res.StatusCode)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
+	// client := &http.Client{}
+	// res, err := client.Do(req)
+	// log.Println(URL, res.Status, res.StatusCode)
+	// if err != nil {
+	// 	return err
+	// }
+	// defer res.Body.Close()
 
-	_, err = ioutil.ReadAll(res.Body)
+	// _, err = ioutil.ReadAll(res.Body)
 	return err
 }
