@@ -8,6 +8,7 @@ type AvailableRepository struct {
 	TransactionRepo TransactionRepository
 	SnapshotRepo    SnapshotCartItemRepository
 	ItemRepo        ItemRepository
+	WalletRepo      WalletRepository
 }
 
 //AvailableUsecase are container of all available usecase

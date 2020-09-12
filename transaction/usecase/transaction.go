@@ -97,10 +97,9 @@ func (u *transactionUsecase) AcceptStatusTransaction(c context.Context, id uuid.
 	}
 
 	for _, snapshotItems := range transaction.SnapshotCartItems {
+		_ = u.walletRepo.UpdateMerchantWallet(ctx, snapshotItems.MerchantID, snapshotItems.Price)
 		_ = u.snapshotRepo.SetPaid(ctx, snapshotItems)
 	}
-
-	// TODO Implement update merchant wallet
 
 	err = u.transactionRepo.UpdateStatusTransaction(ctx, id, enum.TransactionAccepted)
 
