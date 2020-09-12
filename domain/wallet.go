@@ -8,5 +8,5 @@ import (
 
 //WalletRepository represent wallet's repository
 type WalletRepository interface {
-	UpdateMerchantWallet(c context.Context, merchantID uuid.UUID, money float32) error
+	UpdateMerchantWallet(c context.Context, merchantID uuid.UUID, amount float64) error
 }

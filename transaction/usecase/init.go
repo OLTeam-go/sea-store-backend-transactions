@@ -11,6 +11,7 @@ type transactionUsecase struct {
 	transactionRepo domain.TransactionRepository
 	cartRepo        domain.CartRepository
 	snapshotRepo    domain.SnapshotCartItemRepository
+	walletRepo      domain.WalletRepository
 	timeoutContext  time.Duration
 }
 
@@ -21,6 +22,7 @@ func New(r domain.AvailableRepository, tc time.Duration) domain.TransactionUseca
 		cartRepo:        r.CartRepo,
 		transactionRepo: r.TransactionRepo,
 		snapshotRepo:    r.SnapshotRepo,
+		walletRepo:      r.WalletRepo,
 		timeoutContext:  tc,
 	}
 }

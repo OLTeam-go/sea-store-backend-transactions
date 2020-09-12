@@ -21,6 +21,7 @@ import (
 	snapshotCartItemUsecase "github.com/OLTeam-go/sea-store-backend-transactions/snapshot_cart_item/usecase"
 	transactionRepo "github.com/OLTeam-go/sea-store-backend-transactions/transaction/repository/postgresql"
 	transactionUsecase "github.com/OLTeam-go/sea-store-backend-transactions/transaction/usecase"
+	walletRepo "github.com/OLTeam-go/sea-store-backend-transactions/wallet/repository/api"
 	echoPrometheus "github.com/globocom/echo-prometheus"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -76,6 +77,7 @@ func main() {
 	pagesize, err := strconv.Atoi(os.Getenv("PAGESIZE"))
 	timeout, err := strconv.Atoi(os.Getenv("TIMEOUT"))
 	apiurl := os.Getenv("MICROSERVICE_ITEMS_URL")
+	userurl := os.Getenv("MICROSERVICE_USERS_URL")
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -94,6 +96,7 @@ func main() {
 	tRepo := transactionRepo.New(db, pagesize)
 	iRepo := itemRepo.New(apiurl)
 	sRepo := snapshotCartItemRepo.New(db, pagesize)
+	wRepo := walletRepo.New(userurl)
 	allRepo := domain.AvailableRepository{
 		BankRepo:        bRepo,
 		CartRepo:        cRepo,
@@ -101,6 +104,7 @@ func main() {
 		TransactionRepo: tRepo,
 		ItemRepo:        iRepo,
 		SnapshotRepo:    sRepo,
+		WalletRepo:      wRepo,
 	}
 
 	bUsecase := bankUsecase.New(allRepo, tc)
